@@ -26,7 +26,7 @@ function SignInHeader() {
             {' '}
             Click
             <Link
-              className="flex text-[rgb(10,156,247)] mx-2 border-b-2 border-[rgb(10,156,247)]"
+              className="flex text-[rgb(10,156,247)] mx-2 border-b-1 border-[rgb(10,156,247)]"
               href="/auth/signin"
             >
               {' '}

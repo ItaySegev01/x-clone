@@ -12,14 +12,17 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRecoilState } from 'recoil';
 import { activeNavLinkAtom } from '@/app/store';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 function LeftSection() {
   const [activeNavLink, setActiveNavLink] = useRecoilState(activeNavLinkAtom);
+  const router = useRouter();
 
   const handleNavLinkClick = (navlink) => {
     setActiveNavLink(navlink.title);
     if (activeNavLink === 'Home') {
-      window.location.href = '/';
+      router.push('/');
     }
   };
 
@@ -109,7 +112,9 @@ flex-col items-start justify-start pt-2 md:px-10"
         </span>
       ))}
       <span className="w-full items-center justify-center md:flex mt-4 hidden">
-        <button className="post-button w-full">Post</button>
+        <button className="post-button w-full" onClick={() => signOut()}>
+          Post
+        </button>
       </span>
     </div>
   );

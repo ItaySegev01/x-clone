@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
-  useDisclosure,
   Spinner,
 } from '@nextui-org/react';
 import PostElement from '../postElement';
@@ -20,7 +18,7 @@ function ModalItem({ open, setOpen, postId, data }) {
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
   const addReply = async () => {
-    if (reply.trim() == '' || !session) return;
+    if (reply.trim() === '' || !session) return;
     setLoading(true);
     await addDoc(collection(db, 'posts', postId, 'replies'), {
       content: reply,
@@ -42,6 +40,7 @@ function ModalItem({ open, setOpen, postId, data }) {
       isOpen={open}
       className="bg-[#080808] text-white"
       size="lg"
+      onClose={() => setOpen(false)}
     >
       <ModalContent>
         <ModalBody>
@@ -52,7 +51,7 @@ function ModalItem({ open, setOpen, postId, data }) {
             onChange={(e) => setReply(e.target.value)}
             placeholder={
               data.author.email === session?.user?.email
-                ? 'add another post'
+                ? 'reply to your post'
                 : 'post your reply'
             }
             className="w-full text-lg lg:text-xl py-6 px-4 bg-transparent text-white 
@@ -60,9 +59,6 @@ function ModalItem({ open, setOpen, postId, data }) {
           />
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={() => setOpen(false)}>
-            Close
-          </Button>
           <button onClick={addReply} className="post-button w-[100px] py-1">
             {loading ? <Spinner size="sm" color="white" /> : 'Post'}
           </button>

@@ -98,7 +98,7 @@ function PostPage() {
       <LeftSection />
       <MiddleSection>
         <h2 className="text-white text-lg md:text-xl px-4 font-bold py-6">
-          post
+          {postExists && post?.author?.name + "'s Post"}
         </h2>
         {!postExists && (
           <div className="w-full items-center justify-center flex h-full">
@@ -129,7 +129,7 @@ function PostPage() {
                   onChange={(e) => setReply(e.target.value)}
                   placeholder={
                     post?.author?.email === session?.user?.email
-                      ? 'add another post'
+                      ? 'reply to your post'
                       : 'post your reply'
                   }
                   className="w-full text-lg lg:text-xl py-6 px-4 bg-transparent text-white 

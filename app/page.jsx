@@ -18,10 +18,12 @@ import { useRouter } from 'next/navigation';
 import PostElement from '../components/postElement';
 import LeftSection from '@/components/sharedSections/LeftSection';
 import { activeNavLinkAtom } from './store';
+import Link from 'next/link';
 import { useRecoilState } from 'recoil';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { sendToOpenAI } from '@/actions/sendToOpenAI';
 import Image from 'next/image';
+import SignInHeader from '@/components/SignIn-header';
 
 export default function Home() {
   const [activeNavLink, setActiveNavLink] = useRecoilState(activeNavLinkAtom);
@@ -39,6 +41,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState({ image: '', url: '' });
+
   const handleMediaUpload = async (e) => {
     const imageUrl = URL.createObjectURL(e.target.files[0]);
     setSelectedImage({ image: e.target.files[0], url: imageUrl });
@@ -124,132 +127,140 @@ export default function Home() {
       <LeftSection />
       {/* middle */}
       <MiddleSection>
-        <h2 className="text-white text-lg md:text-xl px-4 font-bold py-6">
-          {activeNavLink}
-        </h2>
-        <div
-          className="items-center justify-center flex z-50
+        {session ? (
+          <>
+            <h2 className="text-white text-lg md:text-xl px-4 font-bold py-6">
+              {activeNavLink}
+            </h2>
+            <div
+              className="items-center justify-center flex z-50
          bg-black backdrop-blur-md bg-opacity-20 border-b border-[#161616]
         space-x-4 w-full text-white text-lg sticky top-0"
-        >
-          <span
-            onClick={() => setactiveTab(0)}
-            className={`${activeTab === 0 ? 'active-tab' : 'tab'}`}
-          >
-            For You
-          </span>
-          <span
-            onClick={() => setactiveTab(1)}
-            className={`${activeTab === 1 ? 'active-tab' : 'tab'}`}
-          >
-            Following
-          </span>
-        </div>
-        {/* the input */}
-        <div
-          className="border-y border-[#161616] py-2 w-full relative
-       items-center justify-center flex flex-col"
-        >
-          {/* AI */}
-          <button
-            onClick={handleAIClick}
-            className="text-white absolute top-2 right-2 z-50"
-          >
-            <BoltIcon className="stroke-yellow-500 animate-pulse h-6 w-6" />
-          </button>
-
-          {activateAI ? (
-            <div
-              className="w-[90%] py-4 rounded-lg bg-[#111111] 
-          items-center justify-center flex mb-4 relative"
             >
-              {loadingToAi ? (
-                <Image
-                  src="/loading.webp"
-                  alt="loading"
-                  height={100}
-                  width={100}
-                />
-              ) : (
-                <>
-                  <textarea
-                    type="text"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="write ..."
-                    className="w-[90%] text-lg lg:text-xl py-6 
+              <span
+                onClick={() => setactiveTab(0)}
+                className={`${activeTab === 0 ? 'active-tab' : 'tab'}`}
+              >
+                For You
+              </span>
+              <span
+                onClick={() => setactiveTab(1)}
+                className={`${activeTab === 1 ? 'active-tab' : 'tab'}`}
+              >
+                Following
+              </span>
+            </div>
+            {/* the input */}
+            <div
+              className="border-y border-[#161616] py-2 w-full relative
+       items-center justify-center flex flex-col"
+            >
+              {/* AI */}
+              <button
+                onClick={handleAIClick}
+                className="text-white absolute top-2 right-2 z-50"
+              >
+                <BoltIcon className="stroke-yellow-500 animate-pulse h-6 w-6" />
+              </button>
+
+              {activateAI ? (
+                <div
+                  className="w-[90%] py-4 rounded-lg bg-[#111111] 
+          items-center justify-center flex mb-4 relative"
+                >
+                  {loadingToAi ? (
+                    <Image
+                      src="/loading.webp"
+                      alt="loading"
+                      height={100}
+                      width={100}
+                    />
+                  ) : (
+                    <>
+                      <textarea
+                        type="text"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder=" write with AI ..."
+                        className="w-[90%] text-lg lg:text-xl py-6 
                   px-4 bg-transparent text-white 
                    placeholder:text-white/40 
                        outline-none"
-                  />
-                  <button
-                    onClick={sendPrompt}
-                    className="text-white absolute bottom-0 right-0 px-4 py-1
+                      />
+                      <button
+                        onClick={sendPrompt}
+                        className="text-white absolute bottom-0 right-0 px-4 py-1
                   border border-white bg-black 
                   smooth hover:bg-white hover:text-black rounded-full"
-                  >
-                    send
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            <textarea
-              type="text"
-              value={post}
-              onChange={(e) => setPost(e.target.value)}
-              placeholder="What is happening ?"
-              className="w-[90%] text-lg lg:text-xl py-6 px-4
+                      >
+                        send
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <textarea
+                  type="text"
+                  value={post}
+                  onChange={(e) => setPost(e.target.value)}
+                  placeholder="What is happening ?"
+                  className="w-[90%] text-lg lg:text-xl py-6 px-4
              bg-transparent text-white min-h-[20vh]
           placeholder:text-white/40 outline-none"
-            />
-          )}
-          {selectedImage.image && (
-            <div
-              className="px-5 py-2 rounded-xl w-full
+                />
+              )}
+              {selectedImage.image && (
+                <div
+                  className="px-5 py-2 rounded-xl w-full
           items-center justify-center"
-            >
-              <Image
-                src={selectedImage.url}
-                alt={selectedImage.image.name}
-                height={500}
-                width={500}
-                className="self-center"
-              />
-            </div>
-          )}
+                >
+                  <Image
+                    src={selectedImage.url}
+                    alt={selectedImage.image.name}
+                    height={500}
+                    width={500}
+                    className="self-center"
+                  />
+                </div>
+              )}
 
-          {!activateAI && (
-            <div className="items-center justify-between w-full flex px-4">
-              {/* image input where we can upload media to post */}
-              <span
-                onClick={() => inputRef.current.click()}
-                className="items-center justify-center flex"
-              >
-                <PhotoIcon className="h-6 w-6 cursor-pointer stroke-white" />
-              </span>
-              {/* hidden input for uploading the media */}
-              <input
-                hidden
-                ref={inputRef}
-                type="file"
-                onChange={handleMediaUpload}
-              />
-              <button onClick={addPost} className="post-button md:w-[6vw] py-2">
-                {loading ? <Spinner color="success" /> : 'post'}
-              </button>
+              {!activateAI && (
+                <div className="items-center justify-between w-full flex px-4">
+                  {/* image input where we can upload media to post */}
+                  <span
+                    onClick={() => inputRef.current.click()}
+                    className="items-center justify-center flex"
+                  >
+                    <PhotoIcon className="h-6 w-6 cursor-pointer stroke-white" />
+                  </span>
+                  {/* hidden input for uploading the media */}
+                  <input
+                    hidden
+                    ref={inputRef}
+                    type="file"
+                    onChange={handleMediaUpload}
+                  />
+                  <button
+                    onClick={addPost}
+                    className="post-button md:w-[6vw] py-2"
+                  >
+                    {loading ? <Spinner color="success" /> : 'post'}
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        {/* list posts/tweets */}
-        <div
-          className="w-full item-start justify-start
-       flex flex-col pb-10"
-        >
-          {posts.map((post) => (
-            <PostElement key={post.id} docId={post.id} data={post.data()} />
-          ))}
-        </div>
+            {/* list posts/tweets */}
+            <div
+              className="w-full item-start justify-start flex flex-col pb-10"
+            >
+              {posts.map((post) => (
+                <PostElement key={post.id} docId={post.id} data={post.data()} />
+              ))}
+            </div>
+          </>
+        ) : (
+       <SignInHeader/>
+        )}
       </MiddleSection>
       {/* right */}
       <div className="md:col-span-1 hidden md:flex"></div>

@@ -71,6 +71,7 @@ function PostElement({ data, docId, noIcons, replyId }) {
   useEffect(() => {
     fetchLikes();
   }, [docId]);
+
   const likePostHandler = async () => {
     // add who liked to the same document inside likes array field
     fetchLikes();
@@ -120,6 +121,10 @@ function PostElement({ data, docId, noIcons, replyId }) {
     setToUpdatePost(true);
   };
   const editPost = async () => {
+    if (updatedPost === data.content || updatedPost.trim() === '') {
+      setToUpdatePost(false);
+      return;
+    }
     setLoadingToUpdate(true);
     await updateDoc(doc(db, 'posts', docId), {
       content: updatedPost,
